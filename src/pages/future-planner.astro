@@ -29,7 +29,7 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
       </header>
 
       <p class="planner-privacy">
-        Heads up: your answers are sent to the site owner so this resource can improve. Your name is
+        Heads up: your answers are sent to the site owner (and may be emailed to them through FormSubmit) so this resource can improve. Your name is
         optional, and you should never include sensitive info like your SSN, passwords, or
         addresses. This is a student-made project, not an official Knightdale High or WCPSS site.
       </p>
@@ -88,7 +88,7 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
   </section>
 </Base>
 
-<style>
+<style is:global>
   .planner-page {
     padding: var(--space-16) 0 var(--space-16);
     min-height: 60vh;
@@ -492,11 +492,13 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
       { id: 'paths', type: 'multi',
         text: 'What are you thinking about doing after high school?',
         hint: 'Pick everything that is even slightly on the table. "Honestly, no idea yet" counts.',
-        options: ['4-year college or university', 'Wake Tech / community college', 'Trade or technical school', 'Apprenticeship — learn while you earn', 'The military', 'Go straight to work', 'Gap year — travel, work, or volunteer', 'Start my own business', 'Honestly, no idea yet'] },
+        options: ['4-year college or university', 'Wake Tech / community college', 'Trade or technical school', 'Apprenticeship — learn while you earn', 'The military', 'Go straight to work', 'Gap year — travel, work, or volunteer', 'Start my own business', 'Honestly, no idea yet'],
+        exclusive: ['Honestly, no idea yet'] },
       { id: 'military', type: 'multi',
         text: 'Are you interested in the military?',
         hint: 'Pick any branch that catches your eye — or skip past with "No thanks."',
-        options: ['Army', 'Navy', 'Air Force', 'Marines', 'Coast Guard', 'Space Force', 'National Guard', 'ROTC — college plus military', 'No thanks', "Haven't really thought about it"] },
+        options: ['Army', 'Navy', 'Air Force', 'Marines', 'Coast Guard', 'Space Force', 'National Guard', 'ROTC — college plus military', 'No thanks', "Haven't really thought about it"],
+        exclusive: ['No thanks', "Haven't really thought about it"] },
       { id: 'interests', type: 'multi',
         text: 'Which of these sound most like you?',
         hint: 'This is the same idea as the interest quizzes career counselors use.',
@@ -508,7 +510,7 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
         text: 'Have you heard of the FAFSA — the form that unlocks money for college?',
         options: ["Yes — I've already filled it out", "I've heard of it", 'No — what is that?', "Not relevant to my path"] },
       { id: 'ccp', type: 'single',
-        text: 'Did you know you can take FREE Wake Tech college classes while still in high school?',
+        text: 'Did you know eligible NC students can take tuition-free Wake Tech college classes while still in high school?',
         hint: 'It is called Career and College Promise, and it is one of the best deals in NC.',
         options: ["Yes — I'm already doing it", "I've heard of it, tell me more", 'No way — tell me more', 'Not interested'] },
       { id: 'readiness', type: 'scale',
@@ -520,7 +522,8 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
       { id: 'activities', type: 'multi',
         text: 'What do you do outside of class?',
         hint: 'Pick all that apply. "Nothing yet" is a perfectly good answer.',
-        options: ['Sports', 'Clubs', 'JROTC', 'Volunteering', 'A job', 'My own projects — gaming, coding, creating', 'Nothing yet — looking for my thing'] },
+        options: ['Sports', 'Clubs', 'JROTC', 'Volunteering', 'A job', 'My own projects — gaming, coding, creating', 'Nothing yet — looking for my thing'],
+        exclusive: ['Nothing yet — looking for my thing'] },
       { id: 'help', type: 'multi',
         text: 'What would help you most right now?',
         options: ['Money — scholarships and financial aid', 'Help with applications', 'Figuring out what I actually want to do', 'Military info', 'Trade or apprenticeship info', 'Test prep', 'Just someone to talk to about it'] },
@@ -547,7 +550,7 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
           '<': '\u0026lt;',
           '>': '\u0026gt;',
           '"': '\u0026quot;',
-          "'": '\u0027#39;'
+          "'": '\u0026#39;'
         }[c];
       });
     }
@@ -594,10 +597,21 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
           btn.addEventListener('click', function () {
             if (q.type === 'multi') {
               var arr = state.answers[q.id] || [];
+              var isExcl = (q.exclusive || []).indexOf(opt) !== -1;
               var i = arr.indexOf(opt);
-              if (i === -1) arr.push(opt); else arr.splice(i, 1);
+              if (isExcl) {
+                arr = i === -1 ? [opt] : [];
+              } else if (i === -1) {
+                (q.exclusive || []).forEach(function (x) { var j = arr.indexOf(x); if (j !== -1) arr.splice(j, 1); });
+                arr.push(opt);
+              } else {
+                arr.splice(i, 1);
+              }
               state.answers[q.id] = arr;
-              btn.setAttribute('aria-pressed', arr.indexOf(opt) !== -1 ? 'true' : 'false');
+              optsWrap.querySelectorAll('.quiz-option').forEach(function (b) {
+                var label = b.querySelector('span:last-child').textContent;
+                b.setAttribute('aria-pressed', arr.indexOf(label) !== -1 ? 'true' : 'false');
+              });
               updateNav();
             } else {
               state.answers[q.id] = opt;
@@ -673,18 +687,19 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
       function card(because, title, steps) { cards.push({ because: because, title: title, steps: steps }); }
       var notInterested = ['No thanks', "Haven't really thought about it"];
       var milInterest = (a.military || []).filter(function (m) { return notInterested.indexOf(m) === -1; });
+      var milSignal = milInterest.length > 0 || (a.paths || []).indexOf('The military') !== -1 || (a.help || []).indexOf('Military info') !== -1;
 
-      if (milInterest.length) {
+      if (milSignal) {
         card('You said the military interests you', 'The military path', [
           'Take the <a href="https://www.asvabprogram.com" target="_blank" rel="noopener noreferrer">ASVAB Career Exploration Program</a> — it is free, and your score opens both military and civilian career options.',
-          'Talk to a recruiter from each branch you are considering (' + esc(milInterest.join(', ')) + ') — asking questions does not sign you up for anything.',
-          'Look into <a href="https://www.military.com/join-armed-forces/asvab" target="_blank" rel="noopener noreferrer">ROTC scholarships</a>, which pay for college first, then service.',
+          'Talk to a recruiter from any branch that interests you' + (milInterest.length ? ' (' + esc(milInterest.join(', ')) + ')' : '') + ' — asking questions does not sign you up for anything.',
+          'Look into <a href="https://www.military.com/join-armed-forces/rotc" target="_blank" rel="noopener noreferrer">ROTC scholarships</a>, which pay for college first, then service.',
           'If you are at Knightdale High, JROTC is a zero-pressure way to try military life on for size.'
         ]);
       }
       if ((a.paths || []).indexOf('4-year college or university') !== -1) {
         card('You are considering a 4-year college', 'The 4-year college path', [
-          'Start (or finish) the <a href="https://studentaid.gov" target="_blank" rel="noopener noreferrer">FAFSA</a> — it usually opens in December, and it is the gateway to almost all aid.',
+          'Start (or finish) the <a href="https://studentaid.gov" target="_blank" rel="noopener noreferrer">FAFSA</a> — it is the gateway to almost all aid, and some aid is first-come, first-served.',
           'Build your list and apply through <a href="https://www.cfnc.org" target="_blank" rel="noopener noreferrer">CFNC</a> — North Carolina\u2019s free application hub.',
           'Check <a href="https://www.cfnc.org" target="_blank" rel="noopener noreferrer">CFNC\u2019s entrance requirements</a> to make sure your class schedule checks every box.',
           'Visit campuses — you learn more in one visit than ten websites.'
@@ -736,7 +751,7 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
         card('Based on your FAFSA answer', 'Learn the FAFSA now', [
           'The <a href="https://studentaid.gov" target="_blank" rel="noopener noreferrer">FAFSA</a> is the form that unlocks grants, scholarships, and work-study for college — including Wake Tech.',
           'It is free to file, and you do not need to have picked a school first.',
-          'It usually opens in December — seniors should file it that same month.'
+          'Do not wait on it — some federal, state, and school aid is first-come, first-served, so file as early as you can and check every deadline at studentaid.gov.'
         ]);
       }
       if (a.ccp === 'No way — tell me more' || a.ccp === "I've heard of it, tell me more") {
@@ -755,7 +770,7 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
       }
       if (a.grade === '12th grade') {
         card('Because you are a senior', 'Senior-year timeline', [
-          'FAFSA opens in December — file it the week it opens if you are college-bound.',
+          'If college-bound and you have not filed the FAFSA, do it now — some aid is first-come, first-served.',
           'CFNC college applications in NC are due at various winter/spring deadlines — confirm each school\u2019s date.',
           'If the military is your path, the ASVAB and a recruiter conversation should happen this semester.',
           'Ask your counselor about local scholarships — small ones add up and have fewer applicants.'
@@ -780,6 +795,27 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
           'The <a href="https://www.mynextmove.org/explore/ip" target="_blank" rel="noopener noreferrer">O*NET Interest Profiler</a> — 10 minutes, career matches.',
           '<a href="https://nccareers.org" target="_blank" rel="noopener noreferrer">nccareers.org</a> — NC\u2019s official career tools, including a career-tree builder.',
           'Shadow someone for a day. One real day in a job beats a month of googling.'
+        ]);
+      }
+      if ((a.help || []).indexOf('Test prep') !== -1) {
+        card('You said test prep is where you need help', 'The test-prep kit', [
+          '<a href="https://www.cfnc.org" target="_blank" rel="noopener noreferrer">CFNC</a> has free ACT and SAT prep tools built for NC students.',
+          'The ASVAB (free through many schools) is worth taking even if you are unsure about the military — it doubles as a career test.',
+          'Khan Academy\u2019s free Official Digital SAT Prep is the closest thing to the real thing.'
+        ]);
+      }
+      if ((a.help || []).indexOf('Trade or apprenticeship info') !== -1) {
+        card('You said trade and apprenticeship info would help', 'The trades kit', [
+          'Apprenticeships pay you while you learn — <a href="https://nccareers.org" target="_blank" rel="noopener noreferrer">nccareers.org</a> lists NC options.',
+          'Wake Tech and NC community colleges run 1–2 year trade and certification programs.',
+          'Ask your counselor which CTE courses your school offers — many count toward graduation and a credential at once.'
+        ]);
+      }
+      if ((a.help || []).indexOf('Just someone to talk to about it') !== -1) {
+        card('You said talking it through would help', 'Talk it out', [
+          'Your school counselor\u2019s whole job is this conversation — book five minutes.',
+          'Tell one adult you trust what you are thinking. Saying it out loud shrinks it.',
+          'This planner is a starting point, not a verdict — plans are allowed to change.'
         ]);
       }
       if ((a.help || []).indexOf('Help with applications') !== -1) {
@@ -813,12 +849,17 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
       var submittedAt = new Date().toISOString();
       var payload = { source: 'future-planner', submittedAt: submittedAt, answers: a };
 
+      function fetchWithTimeout(url, opts, ms) {
+        var ctrl = new AbortController();
+        var timer = setTimeout(function () { ctrl.abort(); }, ms);
+        return fetch(url, Object.assign({}, opts, { signal: ctrl.signal })).finally(function () { clearTimeout(timer); });
+      }
       var logFetches = LOG_ENDPOINTS.map(function (url) {
-        return fetch(url, {
+        return fetchWithTimeout(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
-        }).then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); });
+        }, 8000).then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); });
       });
 
       var emailFields = { _subject: 'Future Planner — new response', _template: 'table', submittedAt: submittedAt };
@@ -826,11 +867,11 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
         var v = a[q.id];
         emailFields[q.id] = v == null ? '' : (Array.isArray(v) ? v.join('; ') : String(v));
       });
-      var emailFetch = fetch(EMAIL_ENDPOINT, {
+      var emailFetch = fetchWithTimeout(EMAIL_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(emailFields)
-      }).then(function (r) { return r.json(); });
+      }, 10000).then(function (r) { return r.json(); });
 
       return Promise.allSettled(logFetches.concat([emailFetch])).then(function (settled) {
         var logOk = false, emailOk = false;
