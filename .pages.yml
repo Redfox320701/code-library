@@ -1,0 +1,74 @@
+media:
+  input: public/media
+  output: /code-library/media
+
+content:
+  - name: articles
+    label: Articles
+    type: collection
+    path: src/content/articles
+    filename:
+      template: "{primary}.md"
+      field: create
+    view:
+      fields: [title, topic, level, pubDate]
+      primary: title
+      sort: -pubDate
+    fields:
+      - name: title
+        type: string
+        label: Title
+      - name: description
+        type: text
+        label: Short description
+        description: One or two sentences shown on cards and search results.
+      - name: topic
+        type: select
+        label: Topic
+        options:
+          values: [Python, Web Development, JavaScript, AI & Machine Learning, Tools & Workflow, Computer Science]
+      - name: level
+        type: select
+        label: Level
+        options:
+          values: [Beginner, Intermediate, Advanced]
+      - name: pubDate
+        type: date
+        label: Publish date
+      - name: minutes
+        type: number
+        label: Read time (minutes)
+        default: 5
+      - name: tags
+        type: select
+        label: Tags
+        description: Pick all that apply.
+        options:
+          values:
+            - fundamentals
+            - variables
+            - functions
+            - lists
+            - loops
+            - iteration
+            - reuse
+            - http
+            - urls
+            - browsers
+            - async
+            - promises
+            - javascript
+            - concurrency
+            - algorithms
+            - complexity
+            - performance
+            - llm
+            - ai
+            - machine learning
+            - git
+            - version control
+            - github
+          multiple: true
+      - name: body
+        type: rich-text
+        label: Article body

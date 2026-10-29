@@ -1,0 +1,292 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+const articles = (await getCollection('articles')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const topics = [...new Set(articles.map((a) => a.data.topic))];
+const levels = ['Beginner', 'Intermediate', 'Advanced'];
+
+const base = import.meta.env.BASE_URL;
+
+const articlesJson = JSON.stringify(
+  articles.map((a) => ({
+    title: a.data.title,
+    description: a.data.description,
+    topic: a.data.topic,
+    level: a.data.level,
+    minutes: a.data.minutes,
+    date: a.data.pubDate.toISOString(),
+    url: `${base}articles/${a.id}/`,
+  }))
+);
+---
+
+<Base
+  title="Library — Code Library"
+  description="Browse every article in the Code Library: search by keyword, filter by topic and difficulty level, sort by newest or read time."
+>
+  <section class="article-header">
+    <div class="container">
+      <h1 class="article-title">The library</h1>
+      <p class="article-lede">
+        Search every article, or narrow things down by topic and level. Pick something at your
+        pace and start reading.
+      </p>
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />
+        </svg>
+        <label class="sr-only" for="search">Search articles</label>
+        <input
+          class="search-input"
+          id="search"
+          type="search"
+          placeholder="Search articles, topics, ideas…"
+          autocomplete="off"
+        />
+      </div>
+      <div class="library-layout">
+        <aside class="facets" aria-label="Article filters">
+          <details>
+            <summary>Filters</summary>
+          </details>
+          <div class="facet-group" role="group" aria-label="Topic">
+            <p class="facet-group__title" id="facet-topic-title">Topic</p>
+            <button class="facet-btn" type="button" data-topic="" aria-pressed="true">
+              <span>All topics</span><span class="facet-btn__count" data-count-topic=""></span>
+            </button>
+            {
+              topics.map((t) => (
+                <button class="facet-btn" type="button" data-topic={t} aria-pressed="false">
+                  <span>{t}</span>
+                  <span class="facet-btn__count" data-count-topic={t} />
+                </button>
+              ))
+            }
+          </div>
+          <div class="facet-group" role="group" aria-labelledby="facet-level-title">
+            <p class="facet-group__title" id="facet-level-title">Level</p>
+            <button class="facet-btn" type="button" data-level="" aria-pressed="true">
+              <span>All levels</span><span class="facet-btn__count" data-count-level=""></span>
+            </button>
+            {
+              levels.map((l) => (
+                <button class="facet-btn" type="button" data-level={l} aria-pressed="false">
+                  <span>{l}</span>
+                  <span class="facet-btn__count" data-count-level={l} />
+                </button>
+              ))
+            }
+          </div>
+        </aside>
+        <div>
+          <div class="results-toolbar">
+            <p class="results-count" id="results-count" aria-live="polite"></p>
+            <label class="sr-only" for="sort">Sort articles</label>
+            <select class="sort-select" id="sort">
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="az">Title A–Z</option>
+              <option value="shortest">Shortest read</option>
+            </select>
+          </div>
+          <div class="applied-chips" id="applied-chips" hidden></div>
+          <div class="card-grid" id="results"></div>
+          <div class="empty-state" id="empty-state" hidden>
+            <strong>No articles match those filters</strong>
+            Try a different search term, or clear the filters below.
+            <p style="margin-top: var(--space-4);">
+              <button class="btn btn--ghost btn--small" type="button" data-clear-all>Clear all filters</button>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script define:vars={{ articlesJson }}>
+    const articles = JSON.parse(articlesJson);
+    const results = document.getElementById('results');
+    const emptyState = document.getElementById('empty-state');
+    const countEl = document.getElementById('results-count');
+    const searchInput = document.getElementById('search');
+    const facets = document.querySelector('.facets');
+    const sortSelect = document.getElementById('sort');
+    const chipsWrap = document.getElementById('applied-chips');
+
+    const params = new URLSearchParams(location.search);
+    let query = '';
+    let topic = params.get('topic') || '';
+    let level = params.get('level') || '';
+    let sort = 'newest';
+
+    function escapeHtml(s) {
+      return s.replace(/[&<>"']/g, (c) =>
+        ({ '&': '\u0026amp;', '<': '\u0026lt;', '>': '\u0026gt;', '"': '\u0026quot;', "'": '\u0026#39;' })[c]
+      );
+    }
+
+    function cardHtml(a) {
+      return `
+        <a class="article-card" href="${a.url}">
+          <span class="article-card__meta">
+            <span class="badge badge--topic">${escapeHtml(a.topic)}</span>
+            <span class="badge badge--level-${a.level.toLowerCase()}">${a.level}</span>
+          </span>
+          <span class="article-card__title">${escapeHtml(a.title)}</span>
+          <span class="article-card__desc">${escapeHtml(a.description)}</span>
+          <span class="article-card__foot">
+            <time datetime="${a.date}">${new Date(a.date).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            })}</time>
+            <span aria-hidden="true">·</span>
+            <span>${a.minutes} min read</span>
+          </span>
+        </a>`;
+    }
+
+    function visibleArticles() {
+      const q = query.trim().toLowerCase();
+      return articles.filter((a) => {
+        const matchesQuery =
+          !q ||
+          a.title.toLowerCase().includes(q) ||
+          a.description.toLowerCase().includes(q) ||
+          a.topic.toLowerCase().includes(q);
+        return matchesQuery && (!topic || a.topic === topic) && (!level || a.level === level);
+      });
+    }
+
+    function sortArticles(list) {
+      const sorted = [...list];
+      if (sort === 'newest') sorted.sort((x, y) => new Date(y.date) - new Date(x.date));
+      if (sort === 'oldest') sorted.sort((x, y) => new Date(x.date) - new Date(y.date));
+      if (sort === 'az') sorted.sort((x, y) => x.title.localeCompare(y.title));
+      if (sort === 'shortest') sorted.sort((x, y) => x.minutes - y.minutes);
+      return sorted;
+    }
+
+    function updateCounts() {
+      // Count per facet value, respecting the OTHER facet + search, so counts stay meaningful.
+      const q = query.trim().toLowerCase();
+      const matchesQuery = (a) =>
+        !q ||
+        a.title.toLowerCase().includes(q) ||
+        a.description.toLowerCase().includes(q) ||
+        a.topic.toLowerCase().includes(q);
+      facets.querySelectorAll('[data-count-topic]').forEach((el) => {
+        const t = el.dataset.countTopic;
+        const n = articles.filter(
+          (a) => matchesQuery(a) && (!t || a.topic === t) && (!level || a.level === level)
+        ).length;
+        el.textContent = n;
+        const btn = el.closest('.facet-btn');
+        if (btn && t) btn.disabled = n === 0 && topic !== t;
+        if (btn && t) btn.style.opacity = n === 0 && topic !== t ? '0.45' : '';
+      });
+      facets.querySelectorAll('[data-count-level]').forEach((el) => {
+        const l = el.dataset.countLevel;
+        const n = articles.filter(
+          (a) => matchesQuery(a) && (!topic || a.topic === topic) && (!l || a.level === l)
+        ).length;
+        el.textContent = n;
+        const btn = el.closest('.facet-btn');
+        if (btn && l) btn.disabled = n === 0 && level !== l;
+        if (btn && l) btn.style.opacity = n === 0 && level !== l ? '0.45' : '';
+      });
+    }
+
+    function renderChips() {
+      const chips = [];
+      if (topic) chips.push({ key: 'topic', label: topic });
+      if (level) chips.push({ key: 'level', label: level });
+      chipsWrap.hidden = chips.length === 0;
+      chipsWrap.innerHTML =
+        chips
+          .map(
+            (c) =>
+              `<span class="applied-chip">${escapeHtml(c.label)}<button type="button" data-remove="${c.key}" aria-label="Remove filter: ${escapeHtml(c.label)}">×</button></span>`
+          )
+          .join('') +
+        (chips.length ? '<button class="clear-link" type="button" data-clear-all>Clear all</button>' : '');
+    }
+
+    function render() {
+      const visible = sortArticles(visibleArticles());
+
+      countEl.textContent =
+        visible.length === articles.length
+          ? `All ${articles.length} articles`
+          : `${visible.length} article${visible.length === 1 ? '' : 's'} found`;
+
+      emptyState.hidden = visible.length > 0;
+      results.innerHTML = visible.map(cardHtml).join('');
+      renderChips();
+      updateCounts();
+      syncPressed();
+    }
+
+    function syncPressed() {
+      facets.querySelectorAll('button[data-topic]').forEach((b) => {
+        b.setAttribute('aria-pressed', String((b.dataset.topic || '') === topic));
+      });
+      facets.querySelectorAll('button[data-level]').forEach((b) => {
+        b.setAttribute('aria-pressed', String((b.dataset.level || '') === level));
+      });
+    }
+
+    function clearAll() {
+      query = '';
+      topic = '';
+      level = '';
+      searchInput.value = '';
+      render();
+    }
+
+    searchInput.addEventListener('input', (e) => {
+      query = e.target.value;
+      render();
+    });
+
+    facets.addEventListener('click', (e) => {
+      const topicBtn = e.target.closest('button[data-topic]');
+      if (topicBtn && !topicBtn.disabled) {
+        topic = topicBtn.dataset.topic;
+        render();
+        return;
+      }
+      const levelBtn = e.target.closest('button[data-level]');
+      if (levelBtn && !levelBtn.disabled) {
+        level = levelBtn.dataset.level;
+        render();
+      }
+    });
+
+    sortSelect.addEventListener('change', (e) => {
+      sort = e.target.value;
+      render();
+    });
+
+    chipsWrap.addEventListener('click', (e) => {
+      const remove = e.target.closest('[data-remove]');
+      if (remove) {
+        if (remove.dataset.remove === 'topic') topic = '';
+        if (remove.dataset.remove === 'level') level = '';
+        render();
+        return;
+      }
+      if (e.target.closest('[data-clear-all]')) clearAll();
+    });
+
+    emptyState.addEventListener('click', (e) => {
+      if (e.target.closest('[data-clear-all]')) clearAll();
+    });
+
+    render();
+  </script>
+</Base>

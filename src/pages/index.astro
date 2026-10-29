@@ -1,0 +1,145 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+
+const articles = (await getCollection('articles')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const [featured, ...rest] = articles;
+const sidePicks = rest.slice(0, 2);
+const grid = rest.slice(2, 8);
+const topics = [...new Set(articles.map((a) => a.data.topic))];
+const totalMinutes = articles.reduce((sum, a) => sum + a.data.minutes, 0);
+
+const base = import.meta.env.BASE_URL;
+const featuredUrl = `${base}articles/${featured.id}/`;
+const featuredDate = featured.data.pubDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+---
+
+<Base
+  title="Code Library — learn to code, one article at a time"
+  description="A free library of educational coding articles: Python, web development, JavaScript, AI, and computer science, filtered by topic and level."
+>
+  <section class="hero">
+    <div class="container">
+      <p class="hero__eyebrow">A free reading library</p>
+      <h1 class="hero__title">Learn to code, <em>one article</em> at a time.</h1>
+      <p class="hero__lede">
+        Short, carefully written articles on Python, web development, JavaScript, AI, and computer
+        science — each one built around working code you can read, run, and learn from.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href={`${base}library/`}>Browse the library</a>
+        <a class="btn btn--ghost" href={`${base}about/`}>How this works</a>
+      </div>
+      <div class="stat-strip" role="list" aria-label="Library at a glance">
+        <div class="stat" role="listitem">
+          <span class="stat__value">{articles.length}</span>
+          <span class="stat__label">Articles</span>
+        </div>
+        <div class="stat" role="listitem">
+          <span class="stat__value">{topics.length}</span>
+          <span class="stat__label">Topics</span>
+        </div>
+        <div class="stat" role="listitem">
+          <span class="stat__value">{Math.round(totalMinutes / 60)}h</span>
+          <span class="stat__label">Of reading</span>
+        </div>
+        <div class="stat" role="listitem">
+          <span class="stat__value">3</span>
+          <span class="stat__label">Levels</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section">
+    <div class="container">
+      <h2 class="section-title">Fresh in the library</h2>
+      <p class="section-lede">Start with the newest piece, or pick a track below and follow it end to end.</p>
+      <div class="spotlight">
+        <a class="spotlight-card reveal" href={featuredUrl}>
+          <span class="article-card__meta">
+            <span class="badge badge--topic">{featured.data.topic}</span>
+            <span class={`badge badge--level-${featured.data.level.toLowerCase()}`}>{featured.data.level}</span>
+          </span>
+          <span class="article-card__title">{featured.data.title}</span>
+          <span class="article-card__desc">{featured.data.description}</span>
+          <span class="article-card__foot" style="border-top: none; padding-top: 0;">
+            <time datetime={featured.data.pubDate.toISOString()}>{featuredDate}</time>
+            <span aria-hidden="true">·</span>
+            <span>{featured.data.minutes} min read</span>
+          </span>
+        </a>
+        <div class="spotlight-side">
+          {sidePicks.map((article) => <ArticleCard article={article} />)}
+        </div>
+      </div>
+      {
+        grid.length > 0 && (
+          <div class="card-grid">
+            {grid.map((article) => (
+              <ArticleCard article={article} />
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <section class="home-section home-section--alt">
+    <div class="container">
+      <h2 class="section-title">Find your track</h2>
+      <p class="section-lede">
+        Every article is tagged with a topic and a difficulty level, so you can follow one subject
+        from your first line of code to advanced ideas.
+      </p>
+      <div class="card-grid">
+        {
+          topics.map((topic) => {
+            const count = articles.filter((a) => a.data.topic === topic).length;
+            return (
+              <a class="article-card reveal" href={`${base}library/?topic=${encodeURIComponent(topic)}`}>
+                <span class="article-card__meta">
+                  <span class="badge badge--topic">{topic}</span>
+                </span>
+                <span class="article-card__title">{topic}</span>
+                <span class="article-card__desc">
+                  {count} article{count === 1 ? '' : 's'} in this track
+                </span>
+              </a>
+            );
+          })
+        }
+      </div>
+    </div>
+  </section>
+
+  <script>
+    (function () {
+      const els = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)) {
+        els.forEach((el) => el.classList.add('visible'));
+        return;
+      }
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              io.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.08 }
+      );
+      els.forEach((el) => io.observe(el));
+    })();
+  </script>
+</Base>

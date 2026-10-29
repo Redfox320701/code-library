@@ -1,0 +1,16 @@
+{
+  "name": "code-library",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "build:preview": "astro build --base /",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.19",
+    "astro": "^6.0.5"
+  }
+}

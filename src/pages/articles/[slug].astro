@@ -1,0 +1,205 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles');
+  return articles.map((article) => ({
+    params: { slug: article.id },
+    props: { article },
+  }));
+}
+
+const { article } = Astro.props;
+const { Content } = await render(article);
+const { title, description, topic, level, minutes, pubDate } = article.data;
+
+const related = (await getCollection('articles'))
+  .filter((a) => a.id !== article.id && a.data.topic === topic)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+const base = import.meta.env.BASE_URL;
+const dateLabel = pubDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<Base title={`${title} — Code Library`} description={description}>
+  <div class="progress-bar" id="progress-bar" aria-hidden="true"></div>
+  <article>
+    <header class="article-header">
+      <div class="container">
+        <p class="article-header__meta">
+          <span class="badge badge--topic">{topic}</span>
+          <span class={`badge badge--level-${level.toLowerCase()}`}>{level}</span>
+          <span class="article-card__foot" style="border: none; padding: 0;">
+            <time datetime={pubDate.toISOString()}>{dateLabel}</time>
+            <span aria-hidden="true">·</span>
+            <span>{minutes} min read</span>
+          </span>
+        </p>
+        <h1 class="article-title">{title}</h1>
+        <p class="article-lede">{description}</p>
+      </div>
+    </header>
+    <div class="container">
+      <div class="article-body">
+        <div class="prose-wrap">
+          <div class="reading-toolbar">
+            <span class="reading-toolbar__label" id="text-size-label">Text size</span>
+            <button class="text-size-btn" type="button" data-size="small" aria-label="Smaller text">A</button>
+            <button class="text-size-btn" type="button" data-size="base" aria-label="Default text size" style="font-size: 1rem;">A</button>
+            <button class="text-size-btn" type="button" data-size="large" aria-label="Larger text" style="font-size: 1.15rem;">A</button>
+          </div>
+          <div class="prose" id="prose">
+            <Content />
+            <footer class="article-footer">
+              <p>
+                Found this useful? <a href={`${base}library/`}>Browse more articles</a> on the same
+                track.
+              </p>
+            </footer>
+            {
+              related.length > 0 && (
+                <aside class="related" aria-label="Related articles">
+                  <h2 class="section-title">Keep reading: {topic}</h2>
+                  <div class="related__list">
+                    {related.map((a) => (
+                      <ArticleCard article={a} />
+                    ))}
+                  </div>
+                </aside>
+              )
+            }
+          </div>
+        </div>
+        <nav class="toc" id="toc" aria-label="On this page">
+          <p class="toc__title">On this page</p>
+          <ol id="toc-list"></ol>
+        </nav>
+      </div>
+    </div>
+  </article>
+
+  <script>
+    (function () {
+      var prose = document.getElementById('prose');
+      if (!prose) return;
+
+      // --- Table of contents ---
+      var headings = Array.from(prose.querySelectorAll('h2'));
+      var tocList = document.getElementById('toc-list');
+      var toc = document.getElementById('toc');
+      if (headings.length < 2) {
+        toc.style.display = 'none';
+      } else {
+        headings.forEach(function (h, i) {
+          if (!h.id) h.id = 'section-' + (i + 1);
+          var li = document.createElement('li');
+          var a = document.createElement('a');
+          a.href = '#' + h.id;
+          a.textContent = h.textContent;
+          li.appendChild(a);
+          tocList.appendChild(li);
+        });
+
+        var links = Array.from(tocList.querySelectorAll('a'));
+        if ('IntersectionObserver' in window) {
+          var io = new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                  links.forEach(function (l) {
+                    l.classList.toggle(
+                      'active',
+                      l.getAttribute('href') === '#' + entry.target.id
+                    );
+                  });
+                }
+              });
+            },
+            { rootMargin: '-20% 0px -70% 0px' }
+          );
+          headings.forEach(function (h) { io.observe(h); });
+        }
+      }
+
+      // --- Text size control ---
+      var sizeButtons = Array.from(document.querySelectorAll('[data-size]'));
+      sizeButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var size = btn.dataset.size;
+          prose.setAttribute('data-size', size);
+          sizeButtons.forEach(function (b) {
+            b.setAttribute('aria-pressed', String(b === btn));
+          });
+        });
+      });
+      var defaultBtn = document.querySelector('[data-size="base"]');
+      if (defaultBtn) defaultBtn.setAttribute('aria-pressed', 'true');
+
+      // --- Copy buttons on code blocks ---
+      Array.from(prose.querySelectorAll('pre.astro-code')).forEach(function (pre, i) {
+        pre.id = 'code-' + i;
+        var lang = '';
+        var cls = pre.className || '';
+        var m = cls.match(/language-([\w-]+)/);
+        if (m) lang = m[1];
+        var wrap = document.createElement('div');
+        wrap.className = 'code-block';
+        var header = document.createElement('div');
+        header.className = 'code-block__header';
+        var label = document.createElement('span');
+        label.textContent = lang || 'code';
+        var copy = document.createElement('button');
+        copy.className = 'code-block__copy';
+        copy.type = 'button';
+        copy.textContent = 'Copy';
+        copy.addEventListener('click', function () {
+          var code = pre.querySelector('code');
+          var text = code ? code.textContent : '';
+          var reset = function () {
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1600);
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(
+              function () {
+                copy.textContent = 'Copied';
+                reset();
+              },
+              function () {
+                copy.textContent = 'Copy failed';
+                reset();
+              }
+            );
+          } else {
+            copy.textContent = 'Copy failed';
+            reset();
+          }
+        });
+        header.appendChild(label);
+        header.appendChild(copy);
+        pre.parentNode.insertBefore(wrap, pre);
+        wrap.appendChild(header);
+        wrap.appendChild(pre);
+      });
+
+      // --- Reading progress ---
+      var bar = document.getElementById('progress-bar');
+      if (bar) {
+        var update = function () {
+          var h = document.documentElement;
+          var max = h.scrollHeight - h.clientHeight;
+          var p = max > 0 ? (h.scrollTop / max) * 100 : 0;
+          bar.style.width = p + '%';
+        };
+        document.addEventListener('scroll', update, { passive: true });
+        update();
+      }
+    })();
+  </script>
+</Base>

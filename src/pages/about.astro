@@ -1,0 +1,55 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const count = (await getCollection('articles')).length;
+const base = import.meta.env.BASE_URL;
+---
+
+<Base
+  title="About — Code Library"
+  description="What the Code Library is, who writes it, and how new educational coding articles get published."
+>
+  <section class="about-page">
+    <div class="container">
+      <div class="prose">
+        <h1 class="section-title">About this library</h1>
+        <p class="article-lede" style="margin-top: var(--space-4);">
+          A small, free library of {count} carefully written articles about learning to code —
+          built for readers, not for algorithms.
+        </p>
+
+        <h2>What you'll find here</h2>
+        <p>
+          Every article is short enough to read in one sitting and concrete enough to learn from.
+          Each one is tagged with a topic — Python, web development, JavaScript, AI, computer
+          science, or tools — and a difficulty level, so you can start exactly where you are:
+          Beginner, Intermediate, or Advanced.
+        </p>
+        <p>
+          The reading experience is deliberately calm: no popups, no ads, no tracking, and a dark
+          mode toggle if you read at night. Articles are hosted as static pages, so they load
+          fast on any connection.
+        </p>
+
+        <h2>How articles get published</h2>
+        <p>
+          Articles live as Markdown files in a public GitHub repository. When a new article is
+          added, the site rebuilds itself automatically and the new piece appears on the library
+          page within a minute or two — no servers to babysit, nothing to renew.
+        </p>
+
+        <h2>Reuse and credit</h2>
+        <p>
+          The articles are educational material. You're welcome to read them, share them, and use
+          them in a class or study group. If you spot an error, opening an issue on the
+          repository is the fastest way to flag it.
+        </p>
+
+        <p style="margin-top: var(--space-8);">
+          <a class="btn btn--primary" href={`${base}library/`}>Start reading</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
