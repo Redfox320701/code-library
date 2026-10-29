@@ -1,0 +1,27 @@
+---
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+---
+
+<a class="article-card planner-card" href={`${base}future-planner/`}>
+  <span class="planner-card__head">
+    <img
+      class="planner-card__logo"
+      src={`${base}khs-knights.png`}
+      alt=""
+      width="42"
+      height="35"
+      loading="lazy"
+    />
+    <span class="planner-card__exclusive">Knightdale High School exclusive</span>
+  </span>
+  <span class="article-card__title">Future Planner</span>
+  <span class="article-card__desc">
+    A 15-question quiz that turns your after-high-school thinking into a real plan — college,
+    trades, military, work, or wherever you are headed.
+  </span>
+  <span class="article-card__foot">
+    <span>Interactive quiz</span>
+    <span aria-hidden="true">·</span>
+    <span>about 5 min</span>
+  </span>
+</a>

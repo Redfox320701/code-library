@@ -523,6 +523,37 @@ select {
   gap: var(--space-2);
 }
 
+/* ---- KHS-exclusive Future Planner card ---- */
+.planner-card {
+  border-left: 4px solid #c6b357;
+  background: linear-gradient(
+    165deg,
+    var(--color-surface),
+    color-mix(in oklab, #c6b357 7%, var(--color-surface))
+  );
+}
+.planner-card__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.planner-card__logo {
+  width: 42px;
+  height: auto;
+  flex: none;
+  filter: drop-shadow(0 1px 2px oklch(0.3 0.03 75 / 0.2));
+}
+.planner-card__exclusive {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #8a6d1a;
+}
+[data-theme='dark'] .planner-card__exclusive {
+  color: #d4b95c;
+}
+
 .badge {
   display: inline-flex;
   align-items: center;

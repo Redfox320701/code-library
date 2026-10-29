@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import ArticleCard from '../components/ArticleCard.astro';
+import PlannerCard from '../components/PlannerCard.astro';
 
 const articles = (await getCollection('articles')).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
@@ -84,6 +85,7 @@ const featuredDate = featured.data.pubDate.toLocaleDateString('en-US', {
       {
         grid.length > 0 && (
           <div class="card-grid">
+            <PlannerCard />
             {grid.map((article) => (
               <ArticleCard article={article} />
             ))}
