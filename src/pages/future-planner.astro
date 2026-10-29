@@ -1,0 +1,928 @@
+---
+import Base from '../layouts/Base.astro';
+
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+---
+
+<Base
+  title="Future Planner — Code Library"
+  description="A 15-question guide that helps Knightdale High School students plan for life after high school — college, trades, military, work, and everything in between."
+>
+  <section class="planner-page">
+    <div class="container planner-container">
+      <header class="planner-header">
+        <img
+          src={`${base}khs-knights.png`}
+          alt="Knightdale High School Knights helmet logo"
+          class="planner-logo"
+          width="76"
+          height="64"
+          loading="eager"
+        />
+        <div>
+          <h1 class="planner-title">Future Planner</h1>
+          <p class="planner-subtitle">
+            A 15-question guide to life after high school — built for Knightdale High School
+            students, open to anyone figuring it out.
+          </p>
+        </div>
+      </header>
+
+      <p class="planner-privacy">
+        Heads up: your answers are sent to the site owner so this resource can improve. Your name is
+        optional, and you should never include sensitive info like your SSN, passwords, or
+        addresses. This is a student-made project, not an official Knightdale High or WCPSS site.
+      </p>
+
+      <div id="quiz" class="quiz-shell" data-base={base}>
+        <noscript>
+          <p class="quiz-noscript">
+            The Future Planner quiz needs JavaScript to run. Your browser has JavaScript turned
+            off, so the quiz can't load — but the resources linked at the bottom of this page
+            (CFNC, Wake Tech, FAFSA, nccareers.org) work without it.
+          </p>
+        </noscript>
+      </div>
+
+      <section class="planner-resources">
+        <h2 class="section-title">Resources, whatever your path</h2>
+        <p class="section-lede">
+          Every plan starts with good information. These are the real, official places to get it.
+        </p>
+        <div class="resource-grid">
+          <a class="resource-card" href="https://www.cfnc.org" target="_blank" rel="noopener noreferrer">
+            <span class="resource-card__name">CFNC</span>
+            <span class="resource-card__desc">College Foundation of NC — apply to NC colleges, SAT/ACT prep, and a free planning hub built for North Carolina students.</span>
+          </a>
+          <a class="resource-card" href="https://www.waketech.edu/career-and-college-promise" target="_blank" rel="noopener noreferrer">
+            <span class="resource-card__name">Wake Tech CCP</span>
+            <span class="resource-card__desc">Career and College Promise — tuition-free Wake Tech college classes for eligible NC high school students.</span>
+          </a>
+          <a class="resource-card" href="https://studentaid.gov" target="_blank" rel="noopener noreferrer">
+            <span class="resource-card__name">FAFSA</span>
+            <span class="resource-card__desc">The official federal form that unlocks grants, scholarships, work-study, and loans for college.</span>
+          </a>
+          <a class="resource-card" href="https://nccareers.org" target="_blank" rel="noopener noreferrer">
+            <span class="resource-card__name">nccareers.org</span>
+            <span class="resource-card__desc">North Carolina's official career site — interest tools, a skill matcher, and a career tree builder.</span>
+          </a>
+          <a class="resource-card" href="https://www.mynextmove.org/explore/ip" target="_blank" rel="noopener noreferrer">
+            <span class="resource-card__name">O*NET Interest Profiler</span>
+            <span class="resource-card__desc">The U.S. Department of Labor's free interest quiz — match what you like doing to real careers.</span>
+          </a>
+          <a class="resource-card" href="https://bigfuture.collegeboard.org/career-search/career-quiz" target="_blank" rel="noopener noreferrer">
+            <span class="resource-card__name">BigFuture Career Quiz</span>
+            <span class="resource-card__desc">College Board's free 15-minute career quiz with majors and careers to explore.</span>
+          </a>
+          <a class="resource-card" href="https://www.asvabprogram.com" target="_blank" rel="noopener noreferrer">
+            <span class="resource-card__name">ASVAB CEP</span>
+            <span class="resource-card__desc">The ASVAB Career Exploration Program — free, and it opens both military and non-military career doors.</span>
+          </a>
+          <a class="resource-card" href="https://knightdalehs.wcpss.net" target="_blank" rel="noopener noreferrer">
+            <span class="resource-card__name">Knightdale HS</span>
+            <span class="resource-card__desc">The official Knightdale High School site — counseling, JROTC, clubs, and announcements.</span>
+          </a>
+        </div>
+      </section>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .planner-page {
+    padding: var(--space-16) 0 var(--space-16);
+    min-height: 60vh;
+  }
+  .planner-container {
+    max-width: 760px;
+  }
+  .planner-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    margin-bottom: var(--space-5);
+  }
+  .planner-logo {
+    flex: none;
+    width: 76px;
+    height: auto;
+    filter: drop-shadow(0 2px 6px oklch(0.3 0.03 75 / 0.18));
+  }
+  .planner-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 4.5vw, 3rem);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--color-text);
+    margin: 0;
+  }
+  .planner-subtitle {
+    color: var(--color-text-muted);
+    font-size: 1.05rem;
+    margin: var(--space-2) 0 0;
+    max-width: 46ch;
+  }
+  .planner-privacy {
+    font-size: 0.85rem;
+    color: var(--color-text-faint);
+    background: var(--color-surface-offset);
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    margin: 0 0 var(--space-8);
+  }
+  .quiz-noscript {
+    padding: var(--space-6);
+    background: var(--color-surface);
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-lg);
+  }
+
+  /* ---------- quiz shell ---------- */
+  .quiz-shell {
+    background: var(--color-surface);
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    padding: clamp(var(--space-5), 4vw, var(--space-8));
+  }
+  .quiz-progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+  }
+  .quiz-count {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+  }
+  .quiz-count strong {
+    color: var(--color-primary);
+  }
+  .quiz-question-text {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.3rem, 3vw, 1.65rem);
+    line-height: 1.2;
+    color: var(--color-text);
+    margin: var(--space-4) 0 var(--space-5);
+  }
+  .quiz-progress-track {
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-surface-offset);
+    overflow: hidden;
+  }
+  .quiz-progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: var(--radius-full);
+    background: linear-gradient(90deg, var(--color-primary), var(--color-level-advanced));
+    transition: width 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .quiz-hint {
+    font-size: 0.85rem;
+    color: var(--color-text-faint);
+    margin: calc(-1 * var(--space-2)) 0 var(--space-4);
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .quiz-options--grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: var(--space-2);
+  }
+  .quiz-option {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    text-align: left;
+    min-height: 52px;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-surface-2);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: border-color var(--transition-interactive), background var(--transition-interactive), transform var(--transition-interactive);
+  }
+  .quiz-option:hover {
+    border-color: var(--color-primary);
+  }
+  .quiz-option:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+  .quiz-option[aria-pressed='true'] {
+    border-color: var(--color-primary);
+    background: var(--color-primary-highlight);
+  }
+  .quiz-option__tick {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    border-radius: var(--radius-full);
+    border: 1.5px solid var(--color-border);
+    display: grid;
+    place-items: center;
+    font-size: 0.7rem;
+    color: transparent;
+    background: var(--color-surface);
+  }
+  .quiz-option[aria-pressed='true'] .quiz-option__tick {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+  .quiz-scale-row {
+    display: flex;
+    gap: var(--space-2);
+  }
+  .quiz-scale {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-2);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-2);
+    cursor: pointer;
+  }
+  .quiz-scale[aria-pressed='true'] {
+    border-color: var(--color-primary);
+    background: var(--color-primary-highlight);
+  }
+  .quiz-scale__num {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 600;
+  }
+  .quiz-scale__label {
+    font-size: 0.72rem;
+    color: var(--color-text-faint);
+    text-align: center;
+  }
+  .quiz-input {
+    width: 100%;
+    min-height: 52px;
+    padding: var(--space-3) var(--space-4);
+    font: inherit;
+    color: var(--color-text);
+    background: var(--color-surface-2);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+  .quiz-input:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+    border-color: var(--color-primary);
+  }
+
+  .quiz-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+  .quiz-back {
+    min-height: 44px;
+    padding: var(--space-2) var(--space-4);
+    border: none;
+    background: none;
+    color: var(--color-text-muted);
+    font: inherit;
+    cursor: pointer;
+    border-radius: var(--radius-md);
+  }
+  .quiz-back:hover {
+    color: var(--color-text);
+  }
+  .quiz-back:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  .quiz-next {
+    min-width: 120px;
+  }
+  .quiz-next:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  /* ---------- results ---------- */
+  .quiz-results-header {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.5rem, 3.5vw, 2rem);
+    color: var(--color-text);
+    margin: 0 0 var(--space-2);
+  }
+  .quiz-results-sub {
+    color: var(--color-text-muted);
+    margin: 0 0 var(--space-6);
+  }
+  .result-card {
+    border: 1px solid var(--color-divider);
+    border-left: 4px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-2);
+    padding: var(--space-4) var(--space-5);
+    margin-bottom: var(--space-3);
+  }
+  .result-card__because {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-faint);
+    margin: 0 0 var(--space-1);
+  }
+  .result-card__title {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0 0 var(--space-2);
+  }
+  .result-card ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .result-card a {
+    color: var(--color-primary);
+    font-weight: 500;
+  }
+  .quiz-summary {
+    margin-top: var(--space-6);
+  }
+  .quiz-summary summary {
+    cursor: pointer;
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  .quiz-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .quiz-summary-table th,
+  .quiz-summary-table td {
+    text-align: left;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--color-divider);
+    vertical-align: top;
+  }
+  .quiz-summary-table th {
+    color: var(--color-text-faint);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .quiz-submit-status {
+    margin-top: var(--space-6);
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+  }
+  .quiz-submit-status--ok {
+    background: oklch(0.55 0.12 145 / 0.12);
+    border: 1px solid oklch(0.55 0.12 145 / 0.35);
+  }
+  .quiz-submit-status--warn {
+    background: var(--color-primary-highlight);
+    border: 1px solid var(--color-primary);
+  }
+  .quiz-results-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+
+  /* ---------- resources ---------- */
+  .planner-resources {
+    margin-top: var(--space-16);
+  }
+  .resource-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+  }
+  .resource-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: border-color var(--transition-interactive), transform var(--transition-interactive);
+  }
+  .resource-card:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+  }
+  .resource-card__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--color-text);
+  }
+  .resource-card__desc {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 560px) {
+    .planner-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-3);
+    }
+    .quiz-scale-row {
+      flex-wrap: wrap;
+    }
+    .quiz-scale {
+      min-width: calc(33% - var(--space-2));
+    }
+  }
+</style>
+
+<script>
+  // ---------------------------------------------------------------------
+  // Future Planner — 15-question post-high-school planning quiz
+  // Built after studying 20+ college/career planning quizzes and NC resources.
+  // ---------------------------------------------------------------------
+  (function () {
+    var shell = document.getElementById('quiz');
+    if (!shell) return;
+    var base = shell.getAttribute('data-base') || '/';
+
+    // Submission endpoints: the codespace logger (primary, .txt files) and
+    // an email backup for when the codespace is asleep.
+    var LOG_ENDPOINTS = ['https://ancient-cobweb-jp9wv97p94xcqrqr-8080.app.github.dev/submit'];
+    var EMAIL_ENDPOINT = 'https://formsubmit.co/ajax/comely.jug.1v@icloud.com';
+
+    var QUESTIONS = [
+      { id: 'name', type: 'text', optional: true,
+        text: 'First things first — what should we call you?',
+        hint: 'First name is plenty. Totally fine to skip this one.' },
+      { id: 'grade', type: 'single',
+        text: 'What grade are you in?',
+        options: ['9th grade', '10th grade', '11th grade', '12th grade', 'Not in high school yet'] },
+      { id: 'khs', type: 'single',
+        text: 'Do you go to Knightdale High School?',
+        options: ["Yes — I'm a Knight", "No — and that's completely fine, this planner still works for you"] },
+      { id: 'paths', type: 'multi',
+        text: 'What are you thinking about doing after high school?',
+        hint: 'Pick everything that is even slightly on the table. "Honestly, no idea yet" counts.',
+        options: ['4-year college or university', 'Wake Tech / community college', 'Trade or technical school', 'Apprenticeship — learn while you earn', 'The military', 'Go straight to work', 'Gap year — travel, work, or volunteer', 'Start my own business', 'Honestly, no idea yet'] },
+      { id: 'military', type: 'multi',
+        text: 'Are you interested in the military?',
+        hint: 'Pick any branch that catches your eye — or skip past with "No thanks."',
+        options: ['Army', 'Navy', 'Air Force', 'Marines', 'Coast Guard', 'Space Force', 'National Guard', 'ROTC — college plus military', 'No thanks', "Haven't really thought about it"] },
+      { id: 'interests', type: 'multi',
+        text: 'Which of these sound most like you?',
+        hint: 'This is the same idea as the interest quizzes career counselors use.',
+        options: ['Building and fixing things', 'Figuring out how things work', 'Creating — art, music, writing, design', 'Helping people', 'Leading and organizing', 'Working with data and details'] },
+      { id: 'tests', type: 'single',
+        text: 'Where are you with the SAT or ACT?',
+        options: ['Taken one or both', 'Taking one soon', 'Planning to take them', 'Not yet', "Don't need them for my path"] },
+      { id: 'fafsa', type: 'single',
+        text: 'Have you heard of the FAFSA — the form that unlocks money for college?',
+        options: ["Yes — I've already filled it out", "I've heard of it", 'No — what is that?', "Not relevant to my path"] },
+      { id: 'ccp', type: 'single',
+        text: 'Did you know you can take FREE Wake Tech college classes while still in high school?',
+        hint: 'It is called Career and College Promise, and it is one of the best deals in NC.',
+        options: ["Yes — I'm already doing it", "I've heard of it, tell me more", 'No way — tell me more', 'Not interested'] },
+      { id: 'readiness', type: 'scale',
+        text: 'How ready do you feel for life after high school?',
+        labels: { 1: 'Not at all', 3: 'Getting there', 5: 'Totally ready' } },
+      { id: 'work', type: 'single',
+        text: 'What is your work experience so far?',
+        options: ['I have a job right now', "I've had one before", 'Never had one, but I want one', 'Not yet — focused on school'] },
+      { id: 'activities', type: 'multi',
+        text: 'What do you do outside of class?',
+        hint: 'Pick all that apply. "Nothing yet" is a perfectly good answer.',
+        options: ['Sports', 'Clubs', 'JROTC', 'Volunteering', 'A job', 'My own projects — gaming, coding, creating', 'Nothing yet — looking for my thing'] },
+      { id: 'help', type: 'multi',
+        text: 'What would help you most right now?',
+        options: ['Money — scholarships and financial aid', 'Help with applications', 'Figuring out what I actually want to do', 'Military info', 'Trade or apprenticeship info', 'Test prep', 'Just someone to talk to about it'] },
+      { id: 'timeline', type: 'single',
+        text: 'When do you want to have a real plan?',
+        options: ['I already have one', 'Within this school year', 'By next year', 'Just exploring for now'] },
+      { id: 'anything', type: 'textarea', optional: true,
+        text: 'Anything else you want to tell us?',
+        hint: 'Goals, worries, questions — whatever. Totally optional.' }
+    ];
+
+    var state = { idx: 0, answers: {} };
+
+    function el(tag, cls, html) {
+      var node = document.createElement(tag);
+      if (cls) node.className = cls;
+      if (html != null) node.innerHTML = html;
+      return node;
+    }
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return {
+          '&': '\u0026amp;',
+          '<': '\u0026lt;',
+          '>': '\u0026gt;',
+          '"': '\u0026quot;',
+          "'": '\u0027#39;'
+        }[c];
+      });
+    }
+
+    function answered(q) {
+      var a = state.answers[q.id];
+      if (q.type === 'multi') return Array.isArray(a) && a.length > 0;
+      if (q.type === 'text' || q.type === 'textarea') return q.optional || (typeof a === 'string' && a.trim() !== '');
+      return a != null && a !== '';
+    }
+    function canAdvance() {
+      var q = QUESTIONS[state.idx];
+      return q.optional || answered(q);
+    }
+
+    function renderQuestion() {
+      var q = QUESTIONS[state.idx];
+      shell.innerHTML = '';
+
+      var progress = el('div', 'quiz-progress');
+      progress.innerHTML =
+        '<div class="quiz-progress-row"><span class="quiz-count"><strong>Question ' +
+        (state.idx + 1) + '</strong> of ' + QUESTIONS.length + '</span></div>' +
+        '<div class="quiz-progress-track"><div class="quiz-progress-fill" style="width:' +
+        Math.round(((state.idx + 1) / QUESTIONS.length) * 100) + '%"></div></div>';
+      shell.appendChild(progress);
+
+      var text = el('h2', 'quiz-question-text', esc(q.text));
+      shell.appendChild(text);
+      if (q.hint) shell.appendChild(el('p', 'quiz-hint', esc(q.hint)));
+
+      var optsWrap = el('div', 'quiz-options');
+      if (q.type === 'multi' || q.type === 'single') {
+        if (q.type === 'multi') optsWrap.className = 'quiz-options quiz-options--grid';
+        q.options.forEach(function (opt) {
+          var btn = el('button', 'quiz-option');
+          btn.type = 'button';
+          btn.setAttribute('aria-pressed', 'false');
+          btn.innerHTML = '<span class="quiz-option__tick" aria-hidden="true">\u2713</span><span>' + esc(opt) + '</span>';
+          var selected = q.type === 'multi'
+            ? (state.answers[q.id] || []).indexOf(opt) !== -1
+            : state.answers[q.id] === opt;
+          if (selected) btn.setAttribute('aria-pressed', 'true');
+          btn.addEventListener('click', function () {
+            if (q.type === 'multi') {
+              var arr = state.answers[q.id] || [];
+              var i = arr.indexOf(opt);
+              if (i === -1) arr.push(opt); else arr.splice(i, 1);
+              state.answers[q.id] = arr;
+              btn.setAttribute('aria-pressed', arr.indexOf(opt) !== -1 ? 'true' : 'false');
+              updateNav();
+            } else {
+              state.answers[q.id] = opt;
+              var siblings = optsWrap.querySelectorAll('.quiz-option');
+              siblings.forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+              btn.setAttribute('aria-pressed', 'true');
+              setTimeout(function () { if (state.idx < QUESTIONS.length - 1) next(); }, 260);
+            }
+          });
+          optsWrap.appendChild(btn);
+        });
+      } else if (q.type === 'scale') {
+        optsWrap.className = 'quiz-options quiz-scale-row';
+        [1, 2, 3, 4, 5].forEach(function (n) {
+          var btn = el('button', 'quiz-scale');
+          btn.type = 'button';
+          btn.setAttribute('aria-pressed', 'false');
+          btn.innerHTML = '<span class="quiz-scale__num">' + n + '</span><span class="quiz-scale__label">' + (q.labels && q.labels[n] ? esc(q.labels[n]) : '') + '</span>';
+          if (state.answers[q.id] === n) btn.setAttribute('aria-pressed', 'true');
+          btn.addEventListener('click', function () {
+            state.answers[q.id] = n;
+            optsWrap.querySelectorAll('.quiz-scale').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+            btn.setAttribute('aria-pressed', 'true');
+            setTimeout(function () { if (state.idx < QUESTIONS.length - 1) next(); }, 260);
+          });
+          optsWrap.appendChild(btn);
+        });
+      } else {
+        var input = el(q.type === 'textarea' ? 'textarea' : 'input', 'quiz-input');
+        input.placeholder = q.type === 'textarea' ? 'Type your thoughts here…' : 'Type your answer…';
+        if (q.type === 'textarea') input.rows = 4;
+        input.value = state.answers[q.id] || '';
+        input.addEventListener('input', function () {
+          state.answers[q.id] = input.value;
+          updateNav();
+        });
+        optsWrap.appendChild(input);
+      }
+      shell.appendChild(optsWrap);
+
+      var nav = el('div', 'quiz-nav');
+      var back = el('button', 'quiz-back', '← Back');
+      back.type = 'button';
+      back.disabled = state.idx === 0;
+      back.addEventListener('click', prev);
+      var nextBtn = el('button', 'btn btn--primary quiz-next', state.idx === QUESTIONS.length - 1 ? 'See my plan' : 'Next →');
+      nextBtn.type = 'button';
+      nextBtn.addEventListener('click', next);
+      nav.appendChild(back);
+      nav.appendChild(nextBtn);
+      shell.appendChild(nav);
+      updateNav();
+
+      function updateNav() {
+        var nb = shell.querySelector('.quiz-next');
+        if (nb) nb.disabled = !canAdvance();
+      }
+      function prev() {
+        if (state.idx > 0) { state.idx--; renderQuestion(); }
+      }
+      function next() {
+        if (!canAdvance()) return;
+        if (state.idx < QUESTIONS.length - 1) { state.idx++; renderQuestion(); }
+        else renderResults();
+      }
+    }
+
+    // ------------------------------------------------------------------
+    // Results: transparent, rule-based recommendations
+    // ------------------------------------------------------------------
+    function buildCards(a) {
+      var cards = [];
+      function card(because, title, steps) { cards.push({ because: because, title: title, steps: steps }); }
+      var notInterested = ['No thanks', "Haven't really thought about it"];
+      var milInterest = (a.military || []).filter(function (m) { return notInterested.indexOf(m) === -1; });
+
+      if (milInterest.length) {
+        card('You said the military interests you', 'The military path', [
+          'Take the <a href="https://www.asvabprogram.com" target="_blank" rel="noopener noreferrer">ASVAB Career Exploration Program</a> — it is free, and your score opens both military and civilian career options.',
+          'Talk to a recruiter from each branch you are considering (' + esc(milInterest.join(', ')) + ') — asking questions does not sign you up for anything.',
+          'Look into <a href="https://www.military.com/join-armed-forces/asvab" target="_blank" rel="noopener noreferrer">ROTC scholarships</a>, which pay for college first, then service.',
+          'If you are at Knightdale High, JROTC is a zero-pressure way to try military life on for size.'
+        ]);
+      }
+      if ((a.paths || []).indexOf('4-year college or university') !== -1) {
+        card('You are considering a 4-year college', 'The 4-year college path', [
+          'Start (or finish) the <a href="https://studentaid.gov" target="_blank" rel="noopener noreferrer">FAFSA</a> — it usually opens in December, and it is the gateway to almost all aid.',
+          'Build your list and apply through <a href="https://www.cfnc.org" target="_blank" rel="noopener noreferrer">CFNC</a> — North Carolina\u2019s free application hub.',
+          'Check <a href="https://www.cfnc.org" target="_blank" rel="noopener noreferrer">CFNC\u2019s entrance requirements</a> to make sure your class schedule checks every box.',
+          'Visit campuses — you learn more in one visit than ten websites.'
+        ]);
+      }
+      if ((a.paths || []).indexOf('Wake Tech / community college') !== -1) {
+        card('You are considering Wake Tech or community college', 'The community college path', [
+          'Wake Tech is one of the best-value routes in the state — explore its <a href="https://www.waketech.edu/career-and-college-promise" target="_blank" rel="noopener noreferrer">40+ CCP programs</a> and admissions info.',
+          'Community college credits can transfer to a 4-year school later — ask about the transfer pathway early.',
+          'You can still fill out the <a href="https://studentaid.gov" target="_blank" rel="noopener noreferrer">FAFSA</a> — community college students qualify for aid too.'
+        ]);
+      }
+      if ((a.paths || []).indexOf('Trade or technical school') !== -1 || (a.paths || []).indexOf('Apprenticeship — learn while you earn') !== -1) {
+        card('You are considering trades or an apprenticeship', 'The skilled-trades path', [
+          'Try the <a href="https://nccareers.org" target="_blank" rel="noopener noreferrer">nccareers.org skill matcher</a> to see which trades fit what you are already good at.',
+          'Apprenticeships pay you while you learn — North Carolina is expanding them fast.',
+          'Trade programs at Wake Tech and NC community colleges often take 1\u20132 years, not 4.'
+        ]);
+      }
+      if ((a.paths || []).indexOf('Go straight to work') !== -1) {
+        card('You are considering going straight to work', 'The straight-to-work path', [
+          'Build a simple one-page resume — and get someone to proofread it. Typos cost interviews.',
+          'Set up a profile on <a href="https://www.ncworks.gov" target="_blank" rel="noopener noreferrer">NCWorks</a>, North Carolina\u2019s official job board.',
+          'Keep learning on the side — certifications in first aid, forklift, IT, or coding can raise your starting pay.'
+        ]);
+      }
+      if ((a.paths || []).indexOf('Gap year — travel, work, or volunteer') !== -1) {
+        card('You are considering a gap year', 'The gap-year path', [
+          'A gap year works best with a plan — pick a purpose (work, volunteer, skill) before you pick a destination.',
+          'Set an end date and a re-entry plan (college application deadlines do not wait).',
+          'Some gap programs offer scholarships — search "gap year scholarship" and service programs like AmeriCorps.'
+        ]);
+      }
+      if ((a.paths || []).indexOf('Start my own business') !== -1) {
+        card('You are thinking about starting a business', 'The entrepreneur path', [
+          'Start tiny and real — a lawn service, reselling, tutoring — before investing money.',
+          'North Carolina has free small-business help through the <a href="https://www.sba.gov/nc" target="_blank" rel="noopener noreferrer">SBA</a> and community college small-business centers.',
+          'A business can run alongside college, trades, or work — it does not have to be one or the other.'
+        ]);
+      }
+      if ((a.paths || []).indexOf('Honestly, no idea yet') !== -1 || !(a.paths || []).length) {
+        card('You said you do not have a plan yet — that is completely normal', 'The "no idea yet" path', [
+          'Take the free <a href="https://www.mynextmove.org/explore/ip" target="_blank" rel="noopener noreferrer">O*NET Interest Profiler</a> (10 minutes) — it matches what you enjoy to real careers.',
+          'Try the <a href="https://bigfuture.collegeboard.org/career-search/career-quiz" target="_blank" rel="noopener noreferrer">BigFuture career quiz</a> or the tools on <a href="https://nccareers.org" target="_blank" rel="noopener noreferrer">nccareers.org</a>.',
+          'You do not need THE answer — you need your next step. Most adults changed paths more than once.'
+        ]);
+      }
+      if (a.fafsa === 'No — what is that?' || a.fafsa === "I've heard of it") {
+        card('Based on your FAFSA answer', 'Learn the FAFSA now', [
+          'The <a href="https://studentaid.gov" target="_blank" rel="noopener noreferrer">FAFSA</a> is the form that unlocks grants, scholarships, and work-study for college — including Wake Tech.',
+          'It is free to file, and you do not need to have picked a school first.',
+          'It usually opens in December — seniors should file it that same month.'
+        ]);
+      }
+      if (a.ccp === 'No way — tell me more' || a.ccp === "I've heard of it, tell me more") {
+        card('Based on your Wake Tech answer', 'Career and College Promise (CCP)', [
+          'CCP lets eligible NC high school students take real Wake Tech college classes <strong>tuition-free</strong> — the credits can count for high school and college at the same time.',
+          'It is not just for future college students — CCP has job-training and certification tracks too.',
+          'Talk to your school counselor about eligibility — this is one of the best deals in North Carolina education.'
+        ]);
+      }
+      if (a.readiness != null && a.readiness <= 2) {
+        card('You rated your readiness ' + a.readiness + ' out of 5', 'You are not behind — you are early', [
+          'Meeting your school counselor once this semester costs nothing and saves months of guessing.',
+          'Pick ONE next step from this page and put a date on it. Plans start with one dated step.',
+          'Almost nobody feels ready. The people who look ready just started earlier.'
+        ]);
+      }
+      if (a.grade === '12th grade') {
+        card('Because you are a senior', 'Senior-year timeline', [
+          'FAFSA opens in December — file it the week it opens if you are college-bound.',
+          'CFNC college applications in NC are due at various winter/spring deadlines — confirm each school\u2019s date.',
+          'If the military is your path, the ASVAB and a recruiter conversation should happen this semester.',
+          'Ask your counselor about local scholarships — small ones add up and have fewer applicants.'
+        ]);
+      }
+      if (a.grade === '9th grade' || a.grade === '10th grade') {
+        card('Because you are early in high school', 'The early-bird advantage', [
+          'Your only job right now is to explore — try clubs, JROTC, coding, sports, volunteering, a summer job.',
+          'Wake Tech CCP classes open up to juniors — keep your grades up so you are eligible.',
+          'Take the <a href="https://www.mynextmove.org/explore/ip" target="_blank" rel="noopener noreferrer">O*NET Interest Profiler</a> once a year and watch what changes.'
+        ]);
+      }
+      if ((a.help || []).indexOf('Money — scholarships and financial aid') !== -1) {
+        card('You said money is a top concern', 'The money hunt', [
+          'File the <a href="https://studentaid.gov" target="_blank" rel="noopener noreferrer">FAFSA</a> — most people who skip it leave free money on the table.',
+          'Check <a href="https://www.cfnc.org" target="_blank" rel="noopener noreferrer">CFNC\u2019s scholarship search</a> — it is built for NC students specifically.',
+          'Local scholarships (Knightdale businesses, Wake County groups) get fewer applicants — ask your counselor for the list.'
+        ]);
+      }
+      if ((a.help || []).indexOf('Figuring out what I actually want to do') !== -1) {
+        card('You said figuring out what you want is the hard part', 'The self-knowledge kit', [
+          'The <a href="https://www.mynextmove.org/explore/ip" target="_blank" rel="noopener noreferrer">O*NET Interest Profiler</a> — 10 minutes, career matches.',
+          '<a href="https://nccareers.org" target="_blank" rel="noopener noreferrer">nccareers.org</a> — NC\u2019s official career tools, including a career-tree builder.',
+          'Shadow someone for a day. One real day in a job beats a month of googling.'
+        ]);
+      }
+      if ((a.help || []).indexOf('Help with applications') !== -1) {
+        card('You said applications are where you need help', 'The application kit', [
+          '<a href="https://www.cfnc.org" target="_blank" rel="noopener noreferrer">CFNC</a> walks you through every NC college application.',
+          'Ask one teacher for a recommendation early — good letters take time.',
+          'Write one solid personal essay and reuse the core of it everywhere.'
+        ]);
+      }
+      if (!cards.length) {
+        card('You seem to have a handle on this', 'Keep your momentum', [
+          'Revisit this planner each school year — plans change, and that is the point.',
+          'Help a friend who is stuck. Teaching is the fastest way to sharpen your own plan.'
+        ]);
+      }
+      return cards;
+    }
+
+    function formatAnswersText(a) {
+      var lines = [];
+      QUESTIONS.forEach(function (q, i) {
+        var v = a[q.id];
+        var out = v == null || v === '' ? '(no answer)' : (Array.isArray(v) ? v.join('; ') : String(v));
+        lines.push(pad(i + 1) + '. ' + q.text + '\n    ' + out);
+      });
+      function pad(n) { return n < 10 ? ' ' + n : String(n); }
+      return lines.join('\n');
+    }
+
+    function submitAnswers(a) {
+      var submittedAt = new Date().toISOString();
+      var payload = { source: 'future-planner', submittedAt: submittedAt, answers: a };
+
+      var logFetches = LOG_ENDPOINTS.map(function (url) {
+        return fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }).then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); });
+      });
+
+      var emailFields = { _subject: 'Future Planner — new response', _template: 'table', submittedAt: submittedAt };
+      QUESTIONS.forEach(function (q) {
+        var v = a[q.id];
+        emailFields[q.id] = v == null ? '' : (Array.isArray(v) ? v.join('; ') : String(v));
+      });
+      var emailFetch = fetch(EMAIL_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(emailFields)
+      }).then(function (r) { return r.json(); });
+
+      return Promise.allSettled(logFetches.concat([emailFetch])).then(function (settled) {
+        var logOk = false, emailOk = false;
+        settled.forEach(function (s) {
+          if (s.status !== 'fulfilled') return;
+          var v = s.value;
+          if (v && typeof v === 'object' && 'ok' in v) logOk = logOk || v.ok === true;
+          if (v && typeof v === 'object' && ('success' in v)) emailOk = emailOk || v.success === 'true' || v.success === true;
+        });
+        return { logOk: logOk, emailOk: emailOk };
+      });
+    }
+
+    function renderResults() {
+      var a = state.answers;
+      var cards = buildCards(a);
+      shell.innerHTML = '';
+
+      var progress = el('div', 'quiz-progress');
+      progress.innerHTML =
+        '<div class="quiz-progress-row"><span class="quiz-count"><strong>Done</strong> — 15 of 15</span></div>' +
+        '<div class="quiz-progress-track"><div class="quiz-progress-fill" style="width:100%"></div></div>';
+      shell.appendChild(progress);
+
+      var name = (a.name || '').trim();
+      shell.appendChild(el('h2', 'quiz-results-header',
+        name ? 'Nice work, ' + esc(name) + ' — here is your game plan' : 'Nice work — here is your game plan'));
+      shell.appendChild(el('p', 'quiz-results-sub',
+        'Based on your answers, these are the moves that matter most for you right now. Nothing here is a verdict — it is a starting point.'));
+
+      cards.forEach(function (c) {
+        var div = el('div', 'result-card');
+        div.innerHTML =
+          '<p class="result-card__because">' + esc(c.because) + '</p>' +
+          '<h3 class="result-card__title">' + esc(c.title) + '</h3>' +
+          '<ul>' + c.steps.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ul>';
+        shell.appendChild(div);
+      });
+
+      var summary = el('details', 'quiz-summary');
+      var summaryHtml = '<summary>Show my answers</summary><table class="quiz-summary-table">';
+      QUESTIONS.forEach(function (q) {
+        var v = a[q.id];
+        var out = v == null || v === '' ? '—' : (Array.isArray(v) ? esc(v.join(', ')) : esc(v));
+        summaryHtml += '<tr><th>' + esc(q.text) + '</th><td>' + out + '</td></tr>';
+      });
+      summary.innerHTML = summaryHtml + '</table>';
+      shell.appendChild(summary);
+
+      var status = el('div', 'quiz-submit-status quiz-submit-status--warn', 'Saving your answers…');
+      shell.appendChild(status);
+
+      var actions = el('div', 'quiz-results-actions');
+      var retake = el('button', 'btn btn--ghost', 'Retake the planner');
+      retake.type = 'button';
+      retake.addEventListener('click', function () {
+        state = { idx: 0, answers: {} };
+        renderQuestion();
+        shell.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      actions.appendChild(retake);
+      var download = el('button', 'btn btn--ghost', 'Download my answers (.txt)');
+      download.type = 'button';
+      download.addEventListener('click', function () {
+        var txt = 'FUTURE PLANNER — MY ANSWERS\n' + new Date().toLocaleString() + '\n\n' + formatAnswersText(state.answers);
+        var blob = new Blob([txt], { type: 'text/plain' });
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'future-planner-answers.txt';
+        link.click();
+        URL.revokeObjectURL(link.href);
+      });
+      actions.appendChild(download);
+      shell.appendChild(actions);
+
+      submitAnswers(a).then(function (res) {
+        if (res.logOk) {
+          status.className = 'quiz-submit-status quiz-submit-status--ok';
+          status.textContent = 'Your answers were saved. Thank you.';
+        } else if (res.emailOk) {
+          status.className = 'quiz-submit-status quiz-submit-status--ok';
+          status.textContent = 'Your answers were saved and sent to the site owner. Thank you.';
+        } else {
+          status.className = 'quiz-submit-status quiz-submit-status--warn';
+          status.textContent = 'We could not save your answers automatically — use the "Download my answers" button below to keep a copy.';
+        }
+      }).catch(function () {
+        status.className = 'quiz-submit-status quiz-submit-status--warn';
+        status.textContent = 'We could not save your answers automatically — use the "Download my answers" button below to keep a copy.';
+      });
+    }
+
+    renderQuestion();
+  })();
+</script>
